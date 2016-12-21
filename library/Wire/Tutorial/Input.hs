@@ -1,12 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Wire.Tutorial.Input where
-
--- module Wire.Tutorial.Input ( Input
---                            , inputBehavior
---                            , eventHandler
---                            , updateCamera
---                            ) where
+module Wire.Tutorial.Input ( Input(..)
+                           , inputBehavior
+                           ) where
 
 import Control.Lens
 import Data.Function (fix)
@@ -26,39 +22,21 @@ data Input
   | Quit
   deriving (Show, Eq, Read)
 
-inputBehavior :: Input -> Behavior t (Event t Camera) Camera
-inputBehavior = Behavior . const . eventHandler
-
-eventHandler :: Input -> Event t Camera -> (Camera, Behavior t (Event t Camera) Camera)
-eventHandler W = updateCamera (cameraPosition . _z -~)
-eventHandler S = updateCamera (cameraPosition . _z +~)
-eventHandler A = updateCamera (cameraPosition . _x -~)
-eventHandler D = updateCamera (cameraPosition . _x -~)
-eventHandler U = updateCamera (cameraPosition . _y +~)
-eventHandler J = updateCamera (cameraPosition . _y -~)
-eventHandler _ = updateCamera (const id)
-
-updateCamera :: (Float -> Camera -> Camera) -> Event t Camera -> (Camera, Behavior t (Event t Camera) Camera)
-updateCamera fn Event{..} = (cam, fix $ \b -> Behavior $ const (\_ -> (cam, b)))
+inputBehavior :: (Monad m) => Input -> BehaviorU t m (Event t Camera) Camera
+inputBehavior i = Behavior . const $ return . (inputProc i)
   where
-    cam :: Camera
-    cam = unEvent & snd & fn dv
+    inputProc :: (Monad m) => Input -> Event t Camera -> Either () (Camera, BehaviorU t m (Event t Camera) Camera)
+    inputProc W = updCamera (cameraPosition . _z -~)
+    inputProc S = updCamera (cameraPosition . _z +~)
+    inputProc A = updCamera (cameraPosition . _x -~)
+    inputProc D = updCamera (cameraPosition . _x -~)
+    inputProc U = updCamera (cameraPosition . _y +~)
+    inputProc J = updCamera (cameraPosition . _y -~)
+    inputProc _ = updCamera (const id)
 
--- updateState :: State -> Input -> Maybe State
--- updateState s W = Just $ s & camera . cameraPosition . _z -~ dv
--- updateState s S = Just $ s & camera . cameraPosition . _z +~ dv
--- updateState s A = Just $ s & camera . cameraPosition . _x -~ dv
--- updateState s D = Just $ s & camera . cameraPosition . _x +~ dv
--- updateState s U = Just $ s & camera . cameraPosition . _y -~ dv
--- updateState s J = Just $ s & camera . cameraPosition . _y +~ dv
--- updateState s _ = Nothing
-
--- cameraObj :: Behavior t [Input] Camera
--- cameraObj = Behavior (const inputHandler)
---   where
---     inputHandler :: [Input] -> Camera
---     inputHandler = undefined
-
--- idleing :: Behavior t ([Input], Camera) Camera
--- idleing = Behavior (const snd)
+    updCamera :: (Monad m) => (Float -> Camera -> Camera) -> Event t Camera -> Either () (Camera, BehaviorU t m (Event t Camera) Camera)
+    updCamera fn Event{..} = Right (cam, fix $ \b -> Behavior $ const $ const $ return $ Right (cam, b))
+      where
+        cam :: Camera
+        cam = unEvent & snd & fn dv
 

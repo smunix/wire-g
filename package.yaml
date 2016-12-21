@@ -44,6 +44,7 @@ library:
   - Wire.Behavior
   dependencies:
   - base
+  - mtl
   - lens
   - linear
   - profunctors
