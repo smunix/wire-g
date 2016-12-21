@@ -1,0 +1,79 @@
+-- This file has been generated from package.yaml by hpack version 0.15.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           wire-g
+version:        0.0.1
+synopsis:       A new Haskeleton package.
+description:    wire-g is a new Haskeleton package.
+category:       Other
+homepage:       https://github.com/smunix/wire-g#readme
+bug-reports:    https://github.com/smunix/wire-g/issues
+maintainer:     Providence Salumu
+license:        MIT
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    CHANGELOG.md
+    LICENSE.md
+    package.yaml
+    README.md
+    stack.yaml
+
+source-repository head
+  type: git
+  location: https://github.com/smunix/wire-g
+
+library
+  hs-source-dirs:
+      library
+  ghc-options: -Wall
+  build-depends:
+      base
+    , mtl
+    , lens
+    , linear
+    , profunctors
+  exposed-modules:
+      Example
+      Wire.Tutorial.State
+      Wire.Tutorial.Input
+      Wire.Tutorial.Camera
+      Wire.Behavior
+  default-language: Haskell2010
+
+executable wire-g
+  main-is: Main.hs
+  hs-source-dirs:
+      executable
+  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base
+    , wire-g
+  default-language: Haskell2010
+
+test-suite wire-g-test-suite
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+      test-suite
+  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base
+    , wire-g
+    , tasty
+    , tasty-hspec
+  default-language: Haskell2010
+
+benchmark wire-g-benchmarks
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+      benchmark
+  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base
+    , wire-g
+    , criterion
+  default-language: Haskell2010
