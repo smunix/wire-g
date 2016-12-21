@@ -26,10 +26,10 @@ inputBehavior :: (Monad m) => Input -> BehaviorU t m (Event t Camera) (Maybe Cam
 inputBehavior i = Behavior . const $ return . (inputProc i)
   where
     inputProc :: (Monad m) => Input -> Event t Camera -> Either () (Maybe Camera, BehaviorU t m (Event t Camera) (Maybe Camera))
-    inputProc W = updCamera (cameraPosition . _z -~)
-    inputProc S = updCamera (cameraPosition . _z +~)
+    inputProc W = updCamera (cameraPosition . _z +~)
+    inputProc S = updCamera (cameraPosition . _z -~)
     inputProc A = updCamera (cameraPosition . _x -~)
-    inputProc D = updCamera (cameraPosition . _x -~)
+    inputProc D = updCamera (cameraPosition . _x +~)
     inputProc U = updCamera (cameraPosition . _y +~)
     inputProc J = updCamera (cameraPosition . _y -~)
     inputProc Q = return . Left $ ()
