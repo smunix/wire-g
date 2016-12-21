@@ -1,0 +1,68 @@
+# This YAML file describes your package. Stack will automatically generate a
+# Cabal file when you run `stack build`. See the hpack website for help with
+# this file: <https://github.com/sol/hpack>.
+benchmarks:
+  wire-g-benchmarks:
+    dependencies:
+    - base
+    - wire-g
+    - criterion
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    main: Main.hs
+    source-dirs: benchmark
+category: Other
+description: wire-g is a new Haskeleton package.
+executables:
+  wire-g:
+    dependencies:
+    - base
+    - wire-g
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    main: Main.hs
+    source-dirs: executable
+extra-source-files:
+- CHANGELOG.md
+- LICENSE.md
+- package.yaml
+- README.md
+- stack.yaml
+ghc-options: -Wall
+github: smunix/wire-g
+library:
+  other-modules: []
+  exposed-modules:
+  - Example
+  - Wire.Tutorial.State
+  - Wire.Tutorial.Input
+  - Wire.Tutorial.Camera
+  - Wire.Behavior
+  dependencies:
+  - base
+  - lens
+  - linear
+  - profunctors
+  source-dirs: library
+license: MIT
+maintainer: Providence Salumu
+name: wire-g
+synopsis: A new Haskeleton package.
+tests:
+  wire-g-test-suite:
+    dependencies:
+    - base
+    - wire-g
+    - tasty
+    - tasty-hspec
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    main: Main.hs
+    source-dirs: test-suite
+version: '0.0.1'
