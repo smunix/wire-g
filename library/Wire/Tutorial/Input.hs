@@ -19,23 +19,24 @@ data Input
   | D -- ^ Move Right
   | U -- ^ Move Up
   | J -- ^ Move Down
-  | Quit
+  | Q -- ^ Quit
   deriving (Show, Eq, Read)
 
-inputBehavior :: (Monad m) => Input -> BehaviorU t m (Event t Camera) Camera
+inputBehavior :: (Monad m) => Input -> BehaviorU t m (Event t Camera) (Maybe Camera)
 inputBehavior i = Behavior . const $ return . (inputProc i)
   where
-    inputProc :: (Monad m) => Input -> Event t Camera -> Either () (Camera, BehaviorU t m (Event t Camera) Camera)
+    inputProc :: (Monad m) => Input -> Event t Camera -> Either () (Maybe Camera, BehaviorU t m (Event t Camera) (Maybe Camera))
     inputProc W = updCamera (cameraPosition . _z -~)
     inputProc S = updCamera (cameraPosition . _z +~)
     inputProc A = updCamera (cameraPosition . _x -~)
     inputProc D = updCamera (cameraPosition . _x -~)
     inputProc U = updCamera (cameraPosition . _y +~)
     inputProc J = updCamera (cameraPosition . _y -~)
-    inputProc _ = updCamera (const id)
+    inputProc Q = return . Left $ ()
+    -- inputProc _ = updCamera (const id)
 
-    updCamera :: (Monad m) => (Float -> Camera -> Camera) -> Event t Camera -> Either () (Camera, BehaviorU t m (Event t Camera) Camera)
-    updCamera fn Event{..} = Right (cam, fix $ \b -> Behavior $ const $ const $ return $ Right (cam, b))
+    updCamera :: (Monad m) => (Float -> Camera -> Camera) -> Event t Camera -> Either () (Maybe Camera, BehaviorU t m (Event t Camera) (Maybe Camera))
+    updCamera fn Event{..} = Right (Just cam, fix $ \b -> Behavior $ const $ const $ return $ Right (Just cam, b))
       where
         cam :: Camera
         cam = unEvent & snd & fn dv
