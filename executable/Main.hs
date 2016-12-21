@@ -8,36 +8,30 @@ import Wire.Tutorial.Input
 import Wire.Tutorial.Camera
 
 main :: IO ()
-main = runBehavior camera (0 :: Int)
+main = runBehavior (newCamera 0 0 0) (0 :: Int)
   where
     runBehavior cam i = do
-      cam' <- unBehavior cam i [A, A, W]
+      cam' <- unBehavior (go cam) i []
       case cam' of
         Left _ -> return ()
         Right (cam'R, cam'Be) -> do
           print (i, cam'R)
-          if (i == 3) then return ()
-            else runBehavior cam'Be (i+1)
+          runBehavior cam'R (i+1)
 
-camera :: BehaviorU t IO [Input] Camera
-camera = go (newCamera 0 0 0)
-  where
     go :: Camera -> BehaviorU t IO [Input] Camera
     go c = liftBehavior pollInputs >>= go' c
 
     go' :: Camera -> [Input] -> BehaviorU t IO [Input] Camera
     go' c [] = fix $ \b -> Behavior $ const $ const $ (c, b) & Right & return
-    go' c (i:ixs) = Behavior $ \t ixs' -> do
+    go' c ixsA@(i:ixs) = Behavior $ \t ixs' -> do
+      print (c, ixsA, ixs')
       c' <- unBehavior (inputBehavior i) t (Event (t, c))
       case c' of
         Left err -> err & Left & return
         Right (c'R, _) -> unBehavior (go' c'R ixs) t ixs'
 
     pollInputs :: IO [Input]
-    pollInputs = fmap processInput getLine
-
-    processInput :: String -> [Input]
-    processInput = concatMap (fmap fst . reads) . words
+    pollInputs = fmap (concatMap (fmap fst . reads) . words) getLine
 
 -- idleing :: (Monad m) => BehaviorU t m ([Input], Camera) Camera
 -- idleing = undefined
